@@ -1,16 +1,24 @@
-# This is a sample Python script.
+import pandas as pd
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+# Read JSON file into DataFrame
+df = pd.read_json("yelp_academic_dataset_business.json", lines=True)
 
+# Count the number of records
+num_records = len(df)
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+# Print the number of records
+print("Number of records:", num_records)
 
+b_pandas = []
+r_dtypes = {"name": str}
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+with open("yelp_academic_dataset_business.json", "r") as f:
+    reader = pd.read_json(f, orient="records", lines=True, dtype=r_dtypes, chunksize=1000)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    for chunk in reader:
+        filtered_chunk = chunk[chunk['categories'].str.contains('Restaurants', case=False, na=False)]
+        reduced_chunk = filtered_chunk.drop(columns=['business_id', 'hours', 'is_open'])
+        b_pandas.append(reduced_chunk)
+
+b_pandas = pd.concat(b_pandas, ignore_index=True)
+print(b_pandas)
