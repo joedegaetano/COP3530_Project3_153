@@ -1,5 +1,6 @@
 import pandas as pd
 from helper_functions import shell_sort
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTextEdit
 
 # Turn off data frame console display limitations
 pd.set_option('display.max_rows', None)
@@ -26,3 +27,27 @@ shell_sort(business_list)
 sorted_df = pd.DataFrame(business_list)
 sorted_df = sorted_df[sorted_df['stars'] > 4.0]
 print(sorted_df.head(1000))
+
+
+
+
+
+# PyQT starter
+
+class MainWindow(QMainWindow):
+    def __init__(self, text):
+        super().__init__()
+        self.textEdit = QTextEdit()
+        self.textEdit.setReadOnly(True)  # Make the text edit read-only.
+        self.textEdit.setText(text)
+        self.setCentralWidget(self.textEdit)
+
+
+
+df_string = sorted_df.head(5).to_string()
+
+
+app = QApplication(sys.argv)
+window = MainWindow(df_string)
+window.show()
+sys.exit(app.exec_())
