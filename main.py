@@ -1,7 +1,8 @@
 import sys
+import time
 import pandas as pd
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QLineEdit, QPushButton, QLabel, QHBoxLayout, QTextEdit, QComboBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QLineEdit, QPushButton, QLabel, QHBoxLayout, QTextEdit, QComboBox, QRadioButton, QFrame
 
 
 from helper_functions import shell_sort
@@ -33,7 +34,10 @@ sorted_df = pd.DataFrame(business_list)
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-    
+
+        #Initialize radio button selection variable
+        self.selected_radio_button = "Default"
+
         # Set up the main window
         self.setWindowTitle("Best Eats")
         self.setGeometry(100, 100, 800, 600)
@@ -45,8 +49,57 @@ class MainWindow(QMainWindow):
 
         # Create label for the title
         title_label = QLabel("Best Eats", self)
+        title_label.setAlignment(Qt.AlignCenter)
         title_label.setStyleSheet("font-size: 24px; font-weight: bold;")
         layout.addWidget(title_label)
+        layout.addSpacing(-10)
+
+        # Create a label for the subtitle
+        subtitle_label = QLabel("<i>Serving up the best and worst restaurants in America!</i>", self)
+        subtitle_label.setAlignment(Qt.AlignCenter)
+        subtitle_label.setStyleSheet("font-size: 14px; color: #666666;")
+        layout.addWidget(subtitle_label)
+
+        # Create a frame for the top section
+        top_frame = QFrame(self)
+        top_frame.setFrameShape(QFrame.HLine)  # You can also use QFrame.Panel for a different style
+        top_frame.setLineWidth(1)  # Adjust the line width as needed
+        layout.addWidget(top_frame)
+
+        # Create a label to display the elapsed time
+        self.time_label = QLabel("<b>Last Search Duration: </b>", self)
+        layout.addWidget(self.time_label)
+
+        # Create a frame for the top section
+        top_frame = QFrame(self)
+        top_frame.setFrameShape(QFrame.HLine)  # You can also use QFrame.Panel for a different style
+        top_frame.setLineWidth(1)  # Adjust the line width as needed
+        layout.addWidget(top_frame)
+
+        # Create a label for sorting options
+        sort_label = QLabel("<b>Sort Options:</b>", self)
+        layout.addWidget(sort_label)
+
+        # Create radio buttons for sorting options
+        self.stl_sort_radio = QRadioButton("Default")
+        self.shell_sort_radio = QRadioButton("Shell Sort")
+        self.stupid_sort_radio = QRadioButton("Stupid Sort")
+        self.stl_sort_radio.setChecked(True)  # Default selection
+        sort_radio_layout = QHBoxLayout()
+        sort_radio_layout.addWidget(self.stl_sort_radio)
+        sort_radio_layout.addWidget(self.shell_sort_radio)
+        sort_radio_layout.addWidget(self.stupid_sort_radio)
+        layout.addLayout(sort_radio_layout)
+
+        # Create a frame for the top section
+        top_frame = QFrame(self)
+        top_frame.setFrameShape(QFrame.HLine)  # You can also use QFrame.Panel for a different style
+        top_frame.setLineWidth(1)  # Adjust the line width as needed
+        layout.addWidget(top_frame)
+
+        self.stl_sort_radio.toggled.connect(self.radio_button_selected)
+        self.shell_sort_radio.toggled.connect(self.radio_button_selected)
+        self.stupid_sort_radio.toggled.connect(self.radio_button_selected)
 
         # Predefined filters ComboBox
         self.filter_combo = QComboBox(self)
@@ -80,6 +133,12 @@ class MainWindow(QMainWindow):
         input_layout.addWidget(self.state_input)
         layout.addLayout(input_layout)
 
+        # Create a frame for the top section
+        top_frame = QFrame(self)
+        top_frame.setFrameShape(QFrame.HLine)  # You can also use QFrame.Panel for a different style
+        top_frame.setLineWidth(1)  # Adjust the line width as needed
+        layout.addWidget(top_frame)
+
         # Create go and clear
         go_button = QPushButton("Go", self)
         go_button.clicked.connect(self.display_results)
@@ -105,7 +164,20 @@ class MainWindow(QMainWindow):
         self.cuisine_input.setVisible(is_custom)
         self.name_input.setVisible(is_custom)
 
+    def radio_button_selected(self):
+        if self.stl_sort_radio.isChecked():
+            self.selected_radio_button = "Default Sort"
+        elif self.shell_sort_radio.isChecked():
+            self.selected_radio_button = "Shell Sort"
+        elif self.stupid_sort_radio.isChecked():
+            self.selected_radio_button = "Stupid Sort"
+        else:
+            self.selected_radio_button = "Default Sort"
+
     def display_results(self):
+        #instantiate and start the timer
+        start_time = time.time()
+
         filter_choice = self.filter_combo.currentText()
         results_df = sorted_df.copy()
 
@@ -158,7 +230,14 @@ class MainWindow(QMainWindow):
             self.text_edit.setHtml(formatted_results)
         else:
             self.text_edit.setText("No results found.")
+        end_time = time.time()
 
+        # Calculate the elapsed time
+        elapsed_time = end_time - start_time
+        formatted_time = f"{elapsed_time:.2f} seconds"
+
+        # Update the time label
+        self.time_label.setText("<b>Last Search Duration: </b>" + self.selected_radio_button + ", " + formatted_time)
 
     def clear_inputs(self):
         self.city_input.clear()
