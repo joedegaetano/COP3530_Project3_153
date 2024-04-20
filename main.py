@@ -118,11 +118,11 @@ class MainWindow(QMainWindow):
 
         elif filter_choice == "Best Restaurants":
             results_df = results_df[results_df['stars'] >= 4.0]
-            results_df = results_df.sort_values(by='review_count', ascending=False)
+            results_df = results_df.sort_values(by=['review_count','stars'], ascending=[False,False])
 
         elif filter_choice == "Worst Restaurants":
             results_df = results_df[results_df['stars'] <= 2.5]
-            results_df = results_df.sort_values(by='review_count', ascending=False)
+            results_df = results_df.sort_values(by=['review_count','stars'], ascending=[False,False])
 
         city = self.city_input.text().lower()
         state = self.state_input.text().lower()
@@ -132,6 +132,8 @@ class MainWindow(QMainWindow):
             results_df = results_df.copy()
         elif city.strip() != "" and state.strip()== "":
             results_df = results_df[(results_df['city'].str.lower() == city)]
+        elif city.strip() == "" and state.strip()!= "":
+            results_df = results_df[(results_df['state'].str.lower() == state)]
             # Filter results based on city and state
         else:
             results_df = results_df[(results_df['city'].str.lower() == city) & (results_df['state'].str.lower() == state)]
