@@ -118,35 +118,45 @@ class MainWindow(QMainWindow):
 
         elif filter_choice == "Best Restaurants":
             results_df = results_df[results_df['stars'] >= 4.0]
-            newarray = results_df.to_dict(orient='records')
-            shell_sort(newarray) # Using Custom Sort
-            results_df = pd.DataFrame(newarray)
+            results_df = results_df.sort_values(by='review_count', ascending=False)
 
         elif filter_choice == "Worst Restaurants":
-            results_df = results_df[results_df['stars'] <= 2.0]
-            results_df = results_df.sort_values(by='stars', ascending=True)
+            results_df = results_df[results_df['stars'] <= 2.5]
+            results_df = results_df.sort_values(by='review_count', ascending=False)
 
         city = self.city_input.text().lower()
         state = self.state_input.text().lower()
 
         if city.strip() == "" and state.strip() == "":
             # If city and state inputs are empty, return unfiltered results
-            results_df = sorted_df.copy()
-        else:
+            results_df = results_df.copy()
+        elif city.strip() != "" and state.strip()== "":
+            results_df = results_df[(results_df['city'].str.lower() == city)]
             # Filter results based on city and state
+        else:
             results_df = results_df[(results_df['city'].str.lower() == city) & (results_df['state'].str.lower() == state)]
 
-        results_df = results_df[['name', 'stars', 'review_count']]  # Display only name, stars, and review count
+        results_df = results_df[['name', 'stars', 'review_count','city','state']]  # Display only name, stars, and review count
 
         if not results_df.empty:
-            formatted_results = ""
-            rank = 1  # Start the rank counter at 1
+            # Convert DataFrame to a formatted string table with headers
+            formatted_results = "<table border='1'><tr>"
+            headers = ['Restaurant Name', 'Stars', 'Review Count','City','State']  # Customized headers
+            for header in headers:
+                formatted_results += "<th><b>" + header + "</b></th>"
+            formatted_results += "</tr>"
+            
             for _, row in results_df.iterrows():
-                formatted_results += f"{rank}. {row['name']} - Stars: {row['stars']} - Reviews: {row['review_count']}\n"
-                rank += 1  # Increment the rank for each item
-            self.text_edit.setText(formatted_results)
+                formatted_results += "<tr>"
+                for val in row:
+                    formatted_results += "<td>" + str(val) + "</td>"
+                formatted_results += "</tr>"
+            formatted_results += "</table>"
+            
+            self.text_edit.setHtml(formatted_results)
         else:
             self.text_edit.setText("No results found.")
+
 
     def clear_inputs(self):
         self.city_input.clear()
