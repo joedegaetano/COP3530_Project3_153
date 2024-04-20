@@ -1,11 +1,12 @@
 import sys
 import time
 import pandas as pd
+import random
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QLineEdit, QPushButton, QLabel, QHBoxLayout, QTextEdit, QComboBox, QRadioButton, QFrame, QScrollArea, QSpacerItem, QSizePolicy
 
 from PyQt5.QtGui import QTextCursor
-from helper_functions import shell_sort
+from helper_functions import shell_sort, bogo_sort
 
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
@@ -84,7 +85,7 @@ class MainWindow(QMainWindow):
         # Create radio buttons for sorting options
         self.stl_sort_radio = QRadioButton("Default Sort")
         self.shell_sort_radio = QRadioButton("Shell Sort")
-        self.stupid_sort_radio = QRadioButton("Stupid Sort")
+        self.stupid_sort_radio = QRadioButton("BOGO (Stupid) Sort")
         self.stl_sort_radio.setChecked(True)  # Default selection
         sort_radio_layout = QHBoxLayout()
         sort_radio_layout.addWidget(self.stl_sort_radio)
@@ -175,6 +176,13 @@ class MainWindow(QMainWindow):
         subtitle_label.setAlignment(Qt.AlignCenter)
         subtitle_label.setStyleSheet("font-size: 10px; color: #666666;letter-spacing: 2px;")
         layout.addWidget(subtitle_label)
+        layout.addSpacing(-8)
+        # Create a label for the subtitle
+        subtitle_label = QLabel("<i>DATA PROVIDED BY YELP</i>", self)
+        subtitle_label.setAlignment(Qt.AlignCenter)
+        subtitle_label.setStyleSheet("font-size: 8px; color: #666666;letter-spacing: 2px;")
+        layout.addWidget(subtitle_label)
+
 
 
     def toggle_custom_search(self):
@@ -216,9 +224,14 @@ class MainWindow(QMainWindow):
                 results_df = results_df[results_df['stars'] >= 4.0]
                 results_df = results_df[['name', 'stars', 'review_count', 'city', 'state']]
                 business_list = results_df.to_dict(orient='records')
-                shell_sort(business_list, filter_choice)
+                shell_sort(business_list)
                 results_df = pd.DataFrame(business_list)
-
+            elif self.selected_radio_button == "BOGO (Stupid) Sort":
+                results_df = results_df[results_df['stars'] >= 4.0]
+                results_df = results_df[['name', 'stars', 'review_count', 'city', 'state']]
+                business_list = results_df.to_dict(orient='records')
+                bogo_sort(business_list)
+                results_df = pd.DataFrame(business_list)
         elif filter_choice == "Worst Restaurants":
             if self.selected_radio_button == "Default Sort":
                 results_df = results_df[results_df['stars'] <= 2.5]
@@ -227,7 +240,7 @@ class MainWindow(QMainWindow):
                 results_df = results_df[results_df['stars'] <= 2.5]
                 results_df = results_df[['name', 'stars', 'review_count', 'city', 'state']]
                 business_list = results_df.to_dict(orient='records')
-                shell_sort(business_list, filter_choice)
+                shell_sort(business_list)
                 results_df = pd.DataFrame(business_list)
 
         city = self.city_input.text().lower()
