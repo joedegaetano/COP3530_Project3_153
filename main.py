@@ -31,7 +31,6 @@ business_list = reduced_df.to_dict(orient='records')
 # Convert the sorted list back to a DataFrame
 sorted_df = pd.DataFrame(business_list)
 
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -208,6 +207,19 @@ class MainWindow(QMainWindow):
 
         filter_choice = self.filter_combo.currentText()
         results_df = sorted_df.copy()
+        city = self.city_input.text().lower()
+        state = self.state_input.text().lower()
+
+        if city.strip() == "" and state.strip() == "":
+            # If city and state inputs are empty, return unfiltered results
+            results_df = results_df.copy()
+        elif city.strip() != "" and state.strip()== "":
+            results_df = results_df[(results_df['city'].str.lower() == city)]
+        elif city.strip() == "" and state.strip()!= "":
+            results_df = results_df[(results_df['state'].str.lower() == state)]
+            # Filter results based on city and state
+        else:
+            results_df = results_df[(results_df['city'].str.lower() == city) & (results_df['state'].str.lower() == state)]
 
         if filter_choice == "Custom Search":
             stars = float(self.star_input.text()) if self.star_input.text().isdigit() else 0
@@ -217,18 +229,19 @@ class MainWindow(QMainWindow):
             results_df = results_df.sort_values(by='stars', ascending=False)
 
         elif filter_choice == "Best Restaurants":
+            results_df = results_df[results_df['stars'] >= 4.0]
+            results_df = results_df[['name', 'stars', 'review_count', 'city', 'state']]
             if self.selected_radio_button == "Default Sort":
-                results_df = results_df[results_df['stars'] >= 4.0]
+                print("default")
                 results_df = results_df.sort_values(by=['review_count','stars'], ascending=[False,False])
             elif self.selected_radio_button == "Shell Sort":
-                results_df = results_df[results_df['stars'] >= 4.0]
-                results_df = results_df[['name', 'stars', 'review_count', 'city', 'state']]
+                print("Shell")
                 business_list = results_df.to_dict(orient='records')
                 shell_sort(business_list)
                 results_df = pd.DataFrame(business_list)
-            elif self.selected_radio_button == "BOGO (Stupid) Sort":
-                results_df = results_df[results_df['stars'] >= 4.0]
-                results_df = results_df[['name', 'stars', 'review_count', 'city', 'state']]
+            elif self.selected_radio_button == "Stupid Sort":
+                print("BOGO")
+                #business_list = results_df.to_dict(orient='records')
                 business_list = results_df.to_dict(orient='records')
                 bogo_sort(business_list)
                 results_df = pd.DataFrame(business_list)

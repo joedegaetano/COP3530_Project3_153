@@ -13,10 +13,16 @@ def shell_sort(arr):
             arr[j] = temp
         gap //= 2
 
-def bogo_sort(arr):
-    def is_sorted(arr):
-        return all(arr[i]['review_count'] <= arr[i + 1]['review_count'] for i in range(len(arr) - 1))
+def is_sorted(arr):
+    """Check if the list of dictionaries is sorted."""
+    for i in range(len(arr) - 1):
+        print(arr[i]['review_count'])
+        if arr[i]['review_count'] > arr[i - 1]['review_count']:
+            print("false")
+            return False
+    return True
 
+def bogo_sort(arr):
+    """Implement the Bogo sort algorithm."""
     while not is_sorted(arr):
         random.shuffle(arr)
-    return arr
