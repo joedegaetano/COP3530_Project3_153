@@ -183,7 +183,26 @@ class MainWindow(QMainWindow):
         subtitle_label.setStyleSheet("font-size: 8px; color: #666666;letter-spacing: 2px;")
         layout.addWidget(subtitle_label)
 
-
+    @staticmethod
+    def score_best(stars, review_count):
+        if stars == 5.0:
+            return 30 * review_count
+        elif stars == 4.5:
+            return 20 * review_count
+        elif stars == 4.0:
+            return 10 * review_count
+        else:
+            return 0
+    @staticmethod
+    def score_worst(stars, review_count):
+        if stars == 1.0:
+            return 30 * review_count
+        elif stars == 1.5:
+            return 20 * review_count
+        elif stars == 2.0:
+            return 10 * review_count
+        else:
+            return 0
 
     def toggle_custom_search(self):
         # Show or hide custom search fields based on combo selection
@@ -203,9 +222,7 @@ class MainWindow(QMainWindow):
             self.selected_radio_button = "Default Sort"
 
     def display_results(self):
-        #instantiate and start the timer
         start_time = time.time()
-
         filter_choice = self.filter_combo.currentText()
         results_df = sorted_df.copy()
 
@@ -217,76 +234,62 @@ class MainWindow(QMainWindow):
             results_df = results_df.sort_values(by='stars', ascending=False)
 
         elif filter_choice == "Best Restaurants":
-            if self.selected_radio_button == "Default Sort":
-                results_df = results_df[results_df['stars'] >= 4.0]
-                results_df = results_df.sort_values(by=['review_count','stars'], ascending=[False,False])
-            elif self.selected_radio_button == "Shell Sort":
-                results_df = results_df[results_df['stars'] >= 4.0]
-                results_df = results_df[['name', 'stars', 'review_count', 'city', 'state']]
-                business_list = results_df.to_dict(orient='records')
+            results_df = results_df[results_df['stars'] >= 4.0]
+            results_df['score'] = [self.score_best(row['stars'], row['review_count']) for index, row in results_df.iterrows()]
+            business_list = results_df.to_dict(orient='records')
+            if self.selected_radio_button == "Shell Sort":
                 shell_sort(business_list)
-                results_df = pd.DataFrame(business_list)
             elif self.selected_radio_button == "BOGO (Stupid) Sort":
-                results_df = results_df[results_df['stars'] >= 4.0]
-                results_df = results_df[['name', 'stars', 'review_count', 'city', 'state']]
-                business_list = results_df.to_dict(orient='records')
                 bogo_sort(business_list)
-                results_df = pd.DataFrame(business_list)
+            results_df = pd.DataFrame(business_list).sort_values(by='score', ascending=False)
+
         elif filter_choice == "Worst Restaurants":
-            if self.selected_radio_button == "Default Sort":
-                results_df = results_df[results_df['stars'] <= 2.5]
-                results_df = results_df.sort_values(by=['review_count','stars'], ascending=[False,False])
-            elif self.selected_radio_button == "Shell Sort":
-                results_df = results_df[results_df['stars'] <= 2.5]
-                results_df = results_df[['name', 'stars', 'review_count', 'city', 'state']]
-                business_list = results_df.to_dict(orient='records')
+            results_df = results_df[results_df['stars'] <= 2.0]
+            results_df['score'] = [self.score_worst(row['stars'], row['review_count']) for index, row in results_df.iterrows()]
+            business_list = results_df.to_dict(orient='records')
+            if self.selected_radio_button == "Shell Sort":
                 shell_sort(business_list)
-                results_df = pd.DataFrame(business_list)
+            results_df = pd.DataFrame(business_list).sort_values(by='score', ascending=True)
 
         city = self.city_input.text().lower()
         state = self.state_input.text().lower()
 
         if city.strip() == "" and state.strip() == "":
-            # If city and state inputs are empty, return unfiltered results
             results_df = results_df.copy()
-        elif city.strip() != "" and state.strip()== "":
+        elif city.strip() != "" and state.strip() == "":
             results_df = results_df[(results_df['city'].str.lower() == city)]
-        elif city.strip() == "" and state.strip()!= "":
+        elif city.strip() == "" and state.strip() != "":
             results_df = results_df[(results_df['state'].str.lower() == state)]
-            # Filter results based on city and state
         else:
             results_df = results_df[(results_df['city'].str.lower() == city) & (results_df['state'].str.lower() == state)]
 
-        results_df = results_df[['name', 'stars', 'review_count','city','state']]  # Display only name, stars, and review count
+        results_df = results_df[['name', 'stars', 'review_count', 'city', 'state', 'score']]  # Include score in the displayed fields
 
         if not results_df.empty:
-            # Convert DataFrame to a formatted string table with headers
             formatted_results = "<table border='1'><tr>"
-            headers = ['Restaurant Name', 'Stars', 'Review Count','City','State']  # Customized headers
+            headers = ['Restaurant Name', 'Stars', 'Review Count', 'City', 'State', 'Score']  # Include Score in headers
             for header in headers:
-                formatted_results += "<th align='left'>" + header + "</th>"
-
+                formatted_results += f"<th align='left'>{header}</th>"
             formatted_results += "</tr>"
             
             for _, row in results_df.iterrows():
                 formatted_results += "<tr>"
                 for val in row:
-                    formatted_results += "<td>" + str(val) + "</td>"
+                    formatted_results += f"<td>{val}</td>"
                 formatted_results += "</tr>"
             formatted_results += "</table>"
             
             self.text_edit.setHtml(formatted_results)
         else:
             self.text_edit.setText("No results found.")
-        end_time = time.time()
 
-        # Calculate the elapsed time
+        end_time = time.time()
         elapsed_time = end_time - start_time
         formatted_time = f"{elapsed_time:.2f} seconds"
+        self.time_label.setText(f"<b>Last Search Duration: </b> {self.selected_radio_button}, {formatted_time}")
 
-        # Update the time label
-        self.time_label.setText("<b>Last Search Duration: </b>" + self.selected_radio_button + ", " + formatted_time)
 
+    
     def clear_inputs(self):
         self.city_input.clear()
         self.state_input.clear()
@@ -295,8 +298,18 @@ class MainWindow(QMainWindow):
         self.cuisine_input.clear()
         self.name_input.clear()
 
+
+
 # PyQt5 application initialization
 app = QApplication(sys.argv)
 window = MainWindow()
 window.show()
 sys.exit(app.exec_())
+
+
+
+
+# Additional Helpers
+
+
+
