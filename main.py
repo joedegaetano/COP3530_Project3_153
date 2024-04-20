@@ -26,7 +26,6 @@ reduced_df = filtered_df.drop(columns=['business_id', 'hours', 'is_open', 'latit
 
 # Convert DataFrame to a list of dictionaries and sort it
 business_list = reduced_df.to_dict(orient='records')
-shell_sort(business_list)  
 
 # Convert the sorted list back to a DataFrame
 sorted_df = pd.DataFrame(business_list)
@@ -172,7 +171,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(scroll_area)
 
         # Create a label for the subtitle
-        subtitle_label = QLabel("<i>CREATED BY KRISTIAN O'CONNOR AND JOE DEGAETANO</i>", self)
+        subtitle_label = QLabel("<i>CREATED BY KRISTIAN O'CONNOR & JOE DEGAETANO</i>", self)
         subtitle_label.setAlignment(Qt.AlignCenter)
         subtitle_label.setStyleSheet("font-size: 10px; color: #666666;letter-spacing: 2px;")
         layout.addWidget(subtitle_label)
@@ -210,12 +209,26 @@ class MainWindow(QMainWindow):
             results_df = results_df.sort_values(by='stars', ascending=False)
 
         elif filter_choice == "Best Restaurants":
-            results_df = results_df[results_df['stars'] >= 4.0]
-            results_df = results_df.sort_values(by=['review_count','stars'], ascending=[False,False])
+            if self.selected_radio_button == "Default Sort":
+                results_df = results_df[results_df['stars'] >= 4.0]
+                results_df = results_df.sort_values(by=['review_count','stars'], ascending=[False,False])
+            elif self.selected_radio_button == "Shell Sort":
+                results_df = results_df[results_df['stars'] >= 4.0]
+                results_df = results_df[['name', 'stars', 'review_count', 'city', 'state']]
+                business_list = results_df.to_dict(orient='records')
+                shell_sort(business_list, filter_choice)
+                results_df = pd.DataFrame(business_list)
 
         elif filter_choice == "Worst Restaurants":
-            results_df = results_df[results_df['stars'] <= 2.5]
-            results_df = results_df.sort_values(by=['review_count','stars'], ascending=[False,False])
+            if self.selected_radio_button == "Default Sort":
+                results_df = results_df[results_df['stars'] <= 2.5]
+                results_df = results_df.sort_values(by=['review_count','stars'], ascending=[False,False])
+            elif self.selected_radio_button == "Shell Sort":
+                results_df = results_df[results_df['stars'] <= 2.5]
+                results_df = results_df[['name', 'stars', 'review_count', 'city', 'state']]
+                business_list = results_df.to_dict(orient='records')
+                shell_sort(business_list, filter_choice)
+                results_df = pd.DataFrame(business_list)
 
         city = self.city_input.text().lower()
         state = self.state_input.text().lower()
