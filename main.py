@@ -128,7 +128,14 @@ class MainWindow(QMainWindow):
 
         city = self.city_input.text().lower()
         state = self.state_input.text().lower()
-        results_df = results_df[(results_df['city'].str.lower() == city) & (results_df['state'].str.lower() == state)]
+
+        if city.strip() == "" and state.strip() == "":
+            # If city and state inputs are empty, return unfiltered results
+            results_df = sorted_df.copy()
+        else:
+            # Filter results based on city and state
+            results_df = results_df[(results_df['city'].str.lower() == city) & (results_df['state'].str.lower() == state)]
+
         results_df = results_df[['name', 'stars', 'review_count']]  # Display only name, stars, and review count
 
         if not results_df.empty:
