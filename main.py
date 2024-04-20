@@ -247,43 +247,42 @@ class MainWindow(QMainWindow):
 
         elif filter_choice == "Best Restaurants":
             results_df = results_df[results_df['stars'] >= 4.0]
-            results_df = results_df[['name', 'stars', 'review_count', 'city', 'state']]
+            results_df['score'] = [self.score_best(row['stars'], row['review_count']) for index, row in results_df.iterrows()]
+            #results_df = results_df[['name', 'stars', 'review_count', 'city', 'state', 'score']]
+            
             if self.selected_radio_button == "Default Sort":
-                print("default")
-                results_df = results_df.sort_values(by=['review_count','stars'], ascending=[False,False])
+                results_df = results_df.sort_values(by='score', ascending=[False])
             elif self.selected_radio_button == "Shell Sort":
-                print("Shell")
                 business_list = results_df.to_dict(orient='records')
                 shell_sort(business_list)
                 results_df = pd.DataFrame(business_list)
             elif self.selected_radio_button == "Stupid Sort":
-                print("BOGO")
-                #business_list = results_df.to_dict(orient='records')
                 business_list = results_df.to_dict(orient='records')
                 bogo_sort(business_list)
-            results_df = pd.DataFrame(business_list).sort_values(by='score', ascending=False)
+                results_df = pd.DataFrame(business_list)
+
 
         elif filter_choice == "Worst Restaurants":
-            results_df = results_df[results_df['stars'] <= 2.0]
+            results_df = results_df[results_df['stars'] <= 2.5]
             results_df['score'] = [self.score_worst(row['stars'], row['review_count']) for index, row in results_df.iterrows()]
             business_list = results_df.to_dict(orient='records')
             if self.selected_radio_button == "Shell Sort":
                 shell_sort(business_list)
-            results_df = pd.DataFrame(business_list).sort_values(by='score', ascending=True)
+            results_df = pd.DataFrame(business_list).sort_values(by='review_count', ascending=True)
 
         city = self.city_input.text().lower()
         state = self.state_input.text().lower()
 
-        if city.strip() == "" and state.strip() == "":
-            results_df = results_df.copy()
-        elif city.strip() != "" and state.strip() == "":
-            results_df = results_df[(results_df['city'].str.lower() == city)]
-        elif city.strip() == "" and state.strip() != "":
-            results_df = results_df[(results_df['state'].str.lower() == state)]
-        else:
-            results_df = results_df[(results_df['city'].str.lower() == city) & (results_df['state'].str.lower() == state)]
+ #       if city.strip() == "" and state.strip() == "":
+ #           results_df = results_df.copy()
+ #       elif city.strip() != "" and state.strip() == "":
+ #           results_df = results_df[(results_df['city'].str.lower() == city)]
+ #       elif city.strip() == "" and state.strip() != "":
+ #           results_df = results_df[(results_df['state'].str.lower() == state)]
+ #       else:
+ #           results_df = results_df[(results_df['city'].str.lower() == city) & (results_df['state'].str.lower() == state)]
 
-        results_df = results_df[['name', 'stars', 'review_count', 'city', 'state', 'score']]  # Include score in the displayed fields
+        results_df = results_df[['name', 'stars', 'review_count', 'city', 'state','score']]  # Include score in the displayed fields
 
         if not results_df.empty:
             formatted_results = "<table border='1'><tr>"
@@ -308,8 +307,6 @@ class MainWindow(QMainWindow):
         formatted_time = f"{elapsed_time:.2f} seconds"
         self.time_label.setText(f"<b>Last Search Duration: </b> {self.selected_radio_button}, {formatted_time}")
 
-
-    
     def clear_inputs(self):
         self.city_input.clear()
         self.state_input.clear()
@@ -318,18 +315,12 @@ class MainWindow(QMainWindow):
         self.cuisine_input.clear()
         self.name_input.clear()
 
-
-
 # PyQt5 application initialization
 app = QApplication(sys.argv)
 window = MainWindow()
 window.show()
 sys.exit(app.exec_())
 
-
-
-
-# Additional Helpers
 
 
 
