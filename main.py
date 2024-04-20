@@ -2,9 +2,9 @@ import sys
 import time
 import pandas as pd
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QLineEdit, QPushButton, QLabel, QHBoxLayout, QTextEdit, QComboBox, QRadioButton, QFrame
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QLineEdit, QPushButton, QLabel, QHBoxLayout, QTextEdit, QComboBox, QRadioButton, QFrame, QScrollArea, QSpacerItem, QSizePolicy
 
-
+from PyQt5.QtGui import QTextCursor
 from helper_functions import shell_sort
 
 pd.set_option('display.max_rows', None)
@@ -31,12 +31,13 @@ shell_sort(business_list)
 # Convert the sorted list back to a DataFrame
 sorted_df = pd.DataFrame(business_list)
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
         #Initialize radio button selection variable
-        self.selected_radio_button = "Default"
+        self.selected_radio_button = "Default Sort"
 
         # Set up the main window
         self.setWindowTitle("Best Eats")
@@ -48,16 +49,16 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(central_widget)
 
         # Create label for the title
-        title_label = QLabel("Best Eats", self)
+        title_label = QLabel("BEST EATS", self)
         title_label.setAlignment(Qt.AlignCenter)
-        title_label.setStyleSheet("font-size: 24px; font-weight: bold;")
+        title_label.setStyleSheet("font-size: 30px; font-weight: bold;letter-spacing: 2px;")
         layout.addWidget(title_label)
-        layout.addSpacing(-10)
+        layout.addSpacing(-8)
 
         # Create a label for the subtitle
-        subtitle_label = QLabel("<i>Serving up the best and worst restaurants in America!</i>", self)
+        subtitle_label = QLabel("<i>SERVING UP THE BEST AND WORST RESTAURANTS IN AMERICA!</i>", self)
         subtitle_label.setAlignment(Qt.AlignCenter)
-        subtitle_label.setStyleSheet("font-size: 14px; color: #666666;")
+        subtitle_label.setStyleSheet("font-size: 10px; color: #666666;letter-spacing: 2px;")
         layout.addWidget(subtitle_label)
 
         # Create a frame for the top section
@@ -81,7 +82,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(sort_label)
 
         # Create radio buttons for sorting options
-        self.stl_sort_radio = QRadioButton("Default")
+        self.stl_sort_radio = QRadioButton("Default Sort")
         self.shell_sort_radio = QRadioButton("Shell Sort")
         self.stupid_sort_radio = QRadioButton("Stupid Sort")
         self.stl_sort_radio.setChecked(True)  # Default selection
@@ -133,12 +134,6 @@ class MainWindow(QMainWindow):
         input_layout.addWidget(self.state_input)
         layout.addLayout(input_layout)
 
-        # Create a frame for the top section
-        top_frame = QFrame(self)
-        top_frame.setFrameShape(QFrame.HLine)  # You can also use QFrame.Panel for a different style
-        top_frame.setLineWidth(1)  # Adjust the line width as needed
-        layout.addWidget(top_frame)
-
         # Create go and clear
         go_button = QPushButton("Go", self)
         go_button.clicked.connect(self.display_results)
@@ -149,12 +144,37 @@ class MainWindow(QMainWindow):
         button_layout.addWidget(clear_button)
         layout.addLayout(button_layout)
 
-        # Create the output text area
+        # Create a frame for the top section
+        top_frame = QFrame(self)
+        top_frame.setFrameShape(QFrame.HLine)  # You can also use QFrame.Panel for a different style
+        top_frame.setLineWidth(1)  # Adjust the line width as needed
+        layout.addWidget(top_frame)
         
+
+
+        # Create the QTextEdit widget
         self.text_edit = QTextEdit(self)
         self.text_edit.setReadOnly(True)
-        layout.addWidget(self.text_edit)
-        self.text_edit.setAlignment(Qt.AlignLeft)
+        self.text_edit.setAlignment(Qt.AlignLeft)  # Align content to the left
+        layout.addSpacing(-10)
+
+        # Set font and alignment for headers
+        font = self.text_edit.font()
+        self.text_edit.setFont(font)
+
+        # Create a QScrollArea to hold the QTextEdit
+        scroll_area = QScrollArea(self)
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidget(self.text_edit)
+        layout.addSpacing(-12)
+
+        layout.addWidget(scroll_area)
+
+        # Create a label for the subtitle
+        subtitle_label = QLabel("<i>CREATED BY KRISTIAN O'CONNOR AND JOE DEGAETANO</i>", self)
+        subtitle_label.setAlignment(Qt.AlignCenter)
+        subtitle_label.setStyleSheet("font-size: 10px; color: #666666;letter-spacing: 2px;")
+        layout.addWidget(subtitle_label)
 
 
     def toggle_custom_search(self):
@@ -217,7 +237,8 @@ class MainWindow(QMainWindow):
             formatted_results = "<table border='1'><tr>"
             headers = ['Restaurant Name', 'Stars', 'Review Count','City','State']  # Customized headers
             for header in headers:
-                formatted_results += "<th><b>" + header + "</b></th>"
+                formatted_results += "<th align='left'>" + header + "</th>"
+
             formatted_results += "</tr>"
             
             for _, row in results_df.iterrows():
