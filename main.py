@@ -42,6 +42,7 @@ class MainWindow(QMainWindow):
         # Set up the main window
         self.setWindowTitle("Best Eats")
         self.setGeometry(100, 100, 800, 600)
+        
 
         # Create the central widget and layout
         central_widget = QWidget(self)
@@ -51,7 +52,7 @@ class MainWindow(QMainWindow):
         # Create label for the title
         title_label = QLabel("BEST EATS", self)
         title_label.setAlignment(Qt.AlignCenter)
-        title_label.setStyleSheet("font-size: 30px; font-weight: bold;letter-spacing: 2px;")
+        title_label.setStyleSheet("font-size: 36px; font-weight: bold;letter-spacing: 1px;")
         layout.addWidget(title_label)
         layout.addSpacing(-8)
 
@@ -68,7 +69,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(top_frame)
 
         # Create a label to display the elapsed time
-        self.time_label = QLabel("<b>Last Search Duration: </b>", self)
+        self.time_label = QLabel("<b>Last Search/Duration: </b>", self)
         layout.addWidget(self.time_label)
 
         # Create a frame for the top section
