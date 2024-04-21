@@ -203,8 +203,24 @@ class MainWindow(QMainWindow):
             return 20 * review_count
         elif stars == 2.0:
             return 10 * review_count
+        elif stars == 2.5:
+            return 5 * review_count        
         else:
             return 0
+    @staticmethod
+    def score_custom(stars, review_count):
+        if 1 <= stars < 2:
+            return (review_count)*10
+        elif 2 <= stars < 3:
+            return 2**2*(review_count)*20
+        elif 3 <= stars < 3.5:
+            return 3**2*(review_count)*30
+        elif 3.5 <= stars < 4:
+            return 3.5**2*(review_count)*40
+        elif 4 <= stars < 4.5:
+            return 4**2*(review_count)*60
+        elif 4.5 <= stars <= 5:
+            return 5**2*(review_count)*100        
 
     def toggle_custom_search(self):
         # Show or hide custom search fields based on combo selection
@@ -255,7 +271,7 @@ class MainWindow(QMainWindow):
             (results_df['name'].str.lower().str.contains(name))]
 
             # Calculate score based on stars and review count
-            results_df['score'] = results_df.apply(lambda row: self.score_best(row['stars'], row['review_count']), axis=1)
+            results_df['score'] = results_df.apply(lambda row: self.score_custom(row['stars'], row['review_count']), axis=1)
 
             # Sort results by score and review count
             #results_df = results_df.sort_values(by=['score', 'review_count'], ascending=[False, False])
