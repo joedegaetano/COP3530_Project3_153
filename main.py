@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QLineEdit, QPushButton, QLabel, QHBoxLayout, QTextEdit, QComboBox, QRadioButton, QFrame, QScrollArea, QSpacerItem, QSizePolicy
 
 from PyQt5.QtGui import QTextCursor
-from helper_functions import shell_sort, bogo_sort
+from helper_functions import shell_sort, bogo_sort, quick_sort
 
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
@@ -85,10 +85,12 @@ class MainWindow(QMainWindow):
         self.stl_sort_radio = QRadioButton("Default Sort")
         self.shell_sort_radio = QRadioButton("Shell Sort")
         self.stupid_sort_radio = QRadioButton("BOGO (Stupid) Sort")
+        self.quick_sort_radio = QRadioButton("Quick Sort")
         self.stl_sort_radio.setChecked(True)  # Default selection
         sort_radio_layout = QHBoxLayout()
         sort_radio_layout.addWidget(self.stl_sort_radio)
         sort_radio_layout.addWidget(self.shell_sort_radio)
+        sort_radio_layout.addWidget(self.quick_sort_radio)
         sort_radio_layout.addWidget(self.stupid_sort_radio)
         layout.addLayout(sort_radio_layout)
 
@@ -101,6 +103,7 @@ class MainWindow(QMainWindow):
         self.stl_sort_radio.toggled.connect(self.radio_button_selected)
         self.shell_sort_radio.toggled.connect(self.radio_button_selected)
         self.stupid_sort_radio.toggled.connect(self.radio_button_selected)
+        self.quick_sort_radio.toggled.connect(self.radio_button_selected)
 
         # Predefined filters ComboBox
         self.filter_combo = QComboBox(self)
@@ -217,6 +220,8 @@ class MainWindow(QMainWindow):
             self.selected_radio_button = "Shell Sort"
         elif self.stupid_sort_radio.isChecked():
             self.selected_radio_button = "Stupid Sort"
+        elif self.quick_sort_radio.isChecked():
+            self.selected_radio_button = "Quick Sort"
         else:
             self.selected_radio_button = "Default Sort"
 
@@ -271,6 +276,11 @@ class MainWindow(QMainWindow):
                     business_list = results_df.to_dict(orient='records')
                     bogo_sort(business_list)
                     results_df = pd.DataFrame(business_list)
+                elif self.selected_radio_button == "Quick Sort":
+                    print("quick")
+                    business_list = results_df.to_dict(orient='records')
+                    sorted_business_list = quick_sort(business_list)
+                    results_df = pd.DataFrame(sorted_business_list)                    
     
 
         elif filter_choice == "Worst Restaurants":
@@ -339,7 +349,3 @@ app = QApplication(sys.argv)
 window = MainWindow()
 window.show()
 sys.exit(app.exec_())
-
-
-
-
