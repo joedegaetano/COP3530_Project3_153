@@ -110,7 +110,7 @@ class MainWindow(QMainWindow):
 
         # Custom search inputs
         self.star_input = QLineEdit(self)
-        self.star_input.setPlaceholderText("Enter Minimum Stars")
+        self.star_input.setPlaceholderText("Enter Maximum Stars")
         self.cuisine_input = QLineEdit(self)
         self.cuisine_input.setPlaceholderText("Type of Cuisine")
         self.name_input = QLineEdit(self)
@@ -239,11 +239,22 @@ class MainWindow(QMainWindow):
             results_df = results_df[(results_df['city'].str.lower() == city) & (results_df['state'].str.lower() == state)]
 
         if filter_choice == "Custom Search":
-            stars = float(self.star_input.text()) if self.star_input.text().isdigit() else 0
+            # Get filter values from input fields
+            stars = float(self.star_input.text()) if self.star_input.text().replace('.', '', 1).isdigit() else 5.0
             cuisine = self.cuisine_input.text().lower()
             name = self.name_input.text().lower()
-            results_df = results_df[(results_df['stars'] >= stars) & (results_df['categories'].str.contains(cuisine, case=False, na=False)) & (results_df['name'].str.lower().contains(name))]
-            results_df = results_df.sort_values(by='stars', ascending=False)
+
+            # Filter results based on stars, cuisine, and name
+            results_df = results_df[(results_df['stars'] <= stars) &
+            (results_df['categories'].str.contains(cuisine, case=False, na=False)) &
+            (results_df['name'].str.lower().str.contains(name))]
+
+            # Calculate score based on stars and review count
+            results_df['score'] = results_df.apply(lambda row: self.score_best(row['stars'], row['review_count']), axis=1)
+
+            # Sort results by score and review count
+            results_df = results_df.sort_values(by=['score', 'review_count'], ascending=[False, False])
+
 
         elif filter_choice == "Best Restaurants":
             results_df = results_df[results_df['stars'] >= 4.0]
