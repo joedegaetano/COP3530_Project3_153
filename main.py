@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         #Initialize radio button selection variable
-        self.selected_radio_button = "Default Sort"
+        self.selected_radio_button = "Pandas Sort"
 
         # Set up the main window
         self.setWindowTitle("Best Eats")
@@ -82,11 +82,11 @@ class MainWindow(QMainWindow):
         layout.addWidget(sort_label)
 
         # Create radio buttons for sorting options
-        self.stl_sort_radio = QRadioButton("Default Sort")
+        self.stl_sort_radio = QRadioButton("Pandas Sort")
         self.shell_sort_radio = QRadioButton("Shell Sort")
         self.stupid_sort_radio = QRadioButton("BOGO (Stupid) Sort")
         self.quick_sort_radio = QRadioButton("Quick Sort")
-        self.stl_sort_radio.setChecked(True)  # Default selection
+        self.stl_sort_radio.setChecked(True)  # Pandas selection
         sort_radio_layout = QHBoxLayout()
         sort_radio_layout.addWidget(self.stl_sort_radio)
         sort_radio_layout.addWidget(self.shell_sort_radio)
@@ -231,7 +231,7 @@ class MainWindow(QMainWindow):
 
     def radio_button_selected(self):
         if self.stl_sort_radio.isChecked():
-            self.selected_radio_button = "Default Sort"
+            self.selected_radio_button = "Pandas Sort"
         elif self.shell_sort_radio.isChecked():
             self.selected_radio_button = "Shell Sort"
         elif self.stupid_sort_radio.isChecked():
@@ -239,7 +239,7 @@ class MainWindow(QMainWindow):
         elif self.quick_sort_radio.isChecked():
             self.selected_radio_button = "Quick Sort"
         else:
-            self.selected_radio_button = "Default Sort"
+            self.selected_radio_button = "Pandas Sort"
 
     def display_results(self):
         start_time = time.time()
@@ -276,7 +276,7 @@ class MainWindow(QMainWindow):
             # Sort results by score and review count
             #results_df = results_df.sort_values(by=['score', 'review_count'], ascending=[False, False])
             if not results_df.empty:
-                if self.selected_radio_button == "Default Sort":
+                if self.selected_radio_button == "Pandas Sort":
                     results_df = results_df.sort_values(by=['score','review_count'], ascending=[False,False])
                 elif self.selected_radio_button == "Shell Sort":
                     business_list = results_df.to_dict(orient='records')
@@ -298,7 +298,7 @@ class MainWindow(QMainWindow):
             results_df['score'] = [self.score_best(row['stars'], row['review_count']) for index, row in results_df.iterrows()]
             #results_df = results_df[['name', 'stars', 'review_count', 'city', 'state', 'score']]
             if not results_df.empty:
-                if self.selected_radio_button == "Default Sort":
+                if self.selected_radio_button == "Pandas Sort":
                     results_df = results_df.sort_values(by=['score','review_count'], ascending=[False,False])
                 elif self.selected_radio_button == "Shell Sort":
                     business_list = results_df.to_dict(orient='records')
@@ -320,7 +320,7 @@ class MainWindow(QMainWindow):
             results_df['score'] = [self.score_worst(row['stars'], row['review_count']) for index, row in results_df.iterrows()]
             #business_list = results_df.to_dict(orient='records')
             if not results_df.empty:
-                if self.selected_radio_button == "Default Sort":
+                if self.selected_radio_button == "Pandas Sort":
                     results_df = results_df.sort_values(by='score', ascending=[False])
                 elif self.selected_radio_button == "Shell Sort":
                     business_list = results_df.to_dict(orient='records')

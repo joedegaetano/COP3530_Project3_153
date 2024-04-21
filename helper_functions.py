@@ -13,8 +13,13 @@ def shell_sort(arr):
         gap //= 2
 
 def bogo_sort(arr):
+    it_count = 0
     while not is_sorted(arr):
         random.shuffle(arr)
+        it_count += 1
+        print("it count: " + str(it_count) + "\n")
+        print(arr)
+        print("\n")
     return arr
 
 def is_sorted(arr):
