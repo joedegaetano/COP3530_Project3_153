@@ -258,7 +258,23 @@ class MainWindow(QMainWindow):
             results_df['score'] = results_df.apply(lambda row: self.score_best(row['stars'], row['review_count']), axis=1)
 
             # Sort results by score and review count
-            results_df = results_df.sort_values(by=['score', 'review_count'], ascending=[False, False])
+            #results_df = results_df.sort_values(by=['score', 'review_count'], ascending=[False, False])
+            if not results_df.empty:
+                if self.selected_radio_button == "Default Sort":
+                    results_df = results_df.sort_values(by=['score','review_count'], ascending=[False,False])
+                elif self.selected_radio_button == "Shell Sort":
+                    business_list = results_df.to_dict(orient='records')
+                    shell_sort(business_list)
+                    results_df = pd.DataFrame(business_list)
+                elif self.selected_radio_button == "Stupid Sort":
+                    business_list = results_df.to_dict(orient='records')
+                    bogo_sort(business_list)
+                    results_df = pd.DataFrame(business_list)
+                elif self.selected_radio_button == "Quick Sort":
+                    print("quick")
+                    business_list = results_df.to_dict(orient='records')
+                    sorted_business_list = quick_sort(business_list)
+                    results_df = pd.DataFrame(sorted_business_list)   
 
 
         elif filter_choice == "Best Restaurants":
@@ -298,6 +314,11 @@ class MainWindow(QMainWindow):
                     business_list = results_df.to_dict(orient='records')
                     bogo_sort(business_list)
                     results_df = pd.DataFrame(business_list)
+                elif self.selected_radio_button == "Quick Sort":
+                    print("quick")
+                    business_list = results_df.to_dict(orient='records')
+                    sorted_business_list = quick_sort(business_list)
+                    results_df = pd.DataFrame(sorted_business_list)                       
 
         city = self.city_input.text().lower()
         state = self.state_input.text().lower()
