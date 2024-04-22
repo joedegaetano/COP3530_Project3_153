@@ -153,8 +153,6 @@ class MainWindow(QMainWindow):
         top_frame.setLineWidth(1)  # Adjust the line width as needed
         layout.addWidget(top_frame)
         
-
-
         # Create the QTextEdit widget
         self.text_edit = QTextEdit(self)
         self.text_edit.setReadOnly(True)
@@ -179,6 +177,7 @@ class MainWindow(QMainWindow):
         subtitle_label.setStyleSheet("font-size: 10px; color: #666666;letter-spacing: 2px;")
         layout.addWidget(subtitle_label)
         layout.addSpacing(-8)
+
         # Create a label for the subtitle
         subtitle_label = QLabel("<i>DATA PROVIDED BY YELP</i>", self)
         subtitle_label.setAlignment(Qt.AlignCenter)
@@ -274,7 +273,6 @@ class MainWindow(QMainWindow):
             results_df['score'] = results_df.apply(lambda row: self.score_custom(row['stars'], row['review_count']), axis=1)
 
             # Sort results by score and review count
-            #results_df = results_df.sort_values(by=['score', 'review_count'], ascending=[False, False])
             if not results_df.empty:
                 if self.selected_radio_button == "Pandas Sort":
                     results_df = results_df.sort_values(by=['score','review_count'], ascending=[False,False])
@@ -338,15 +336,6 @@ class MainWindow(QMainWindow):
 
         city = self.city_input.text().lower()
         state = self.state_input.text().lower()
-
- #       if city.strip() == "" and state.strip() == "":
- #           results_df = results_df.copy()
- #       elif city.strip() != "" and state.strip() == "":
- #           results_df = results_df[(results_df['city'].str.lower() == city)]
- #       elif city.strip() == "" and state.strip() != "":
- #           results_df = results_df[(results_df['state'].str.lower() == state)]
- #       else:
- #           results_df = results_df[(results_df['city'].str.lower() == city) & (results_df['state'].str.lower() == state)]
 
         results_df = results_df[['name', 'stars', 'review_count', 'city', 'state','score']]  # Include score in the displayed fields
 
