@@ -1,4 +1,4 @@
-This program was coded in python using the PyQT and Pandas python libraries, and uses the public Yelp dataset.  In order to effectively run this program, take the following steps:
+This program was coded in python using the PyQT5 and Pandas python libraries, and uses the public Yelp dataset.  In order to effectively run this program, take the following steps:
 
   1) Install PyQT5 and Pandas python libraries
      * PyQT5 Download Guide: https://riverbankcomputing.com/software/pyqt/download
