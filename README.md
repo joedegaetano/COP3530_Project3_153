@@ -3,7 +3,7 @@ This program was coded in python using the PyQT5 and Pandas python libraries, an
   1) Install PyQT5 and Pandas python libraries
      * PyQT5 Download Guide: https://riverbankcomputing.com/software/pyqt/download
      * Pandas Download Guide: https://pandas.pydata.org/docs/getting_started/install.html
-  2) Download the Yelp public data set: https://www.yelp.com/dataset
+  2) Download the Yelp public data set: https://www.yelp.com/dataset or download the required file here: https://drive.google.com/file/d/10NG0_TTF3R29jpSMVxtOuwGnozY5qFFt/view?usp=drive_link
   3) Extract the file entitled yelp_academic_dataset_business.json
   4) Copy this file into the same directory that the main.py and helper_functions.py are in
 
